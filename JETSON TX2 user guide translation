@@ -1,0 +1,259 @@
+参考：
+http://developer2.download.nvidia.com/embedded/L4T/r27_Release_v1.0/Docs/Jetson_X2_Developer_Kit_User_Guide.pdf?nSdPUKxHB8QnFv5gmHFG5_WMR0tElxDt5u8-M8GZN5z2PeG5YyB1dVI4tDl9OKMteQEsSp6C_jUJ_psKp2_e03tgLrXeEj0GTSUscrQnplbjzDBPdjkmowPUtkxIbaNCd-TVPJlLEBV70DY3XgI8CW869EaOLCw30C_GPwXWPnsKihV1YijppQ
+NVIDIA®
+Jetson™TX2开发套件是可视化计算的全功能开发平台。它是在低功率包络中需要高计算性能的应用的理想选择。 Jetson TX2开发套件旨在让您快速上手并运行;它采用Linux环境进行预闪，包括对许多常见API的支持，并由NVIDIA的完整开发工具链支持。该板公开了许多标准硬件接口，实现了高度灵活和可扩展的平台。
+对于软件更新和支持您的操作系统映像和主机开发平台的开发人员SDK，请访问：
+
+            http://developer.nvidia.com/embedded-computing
+
+SDK包含一个操作系统映像，用于加载到设备上，开发人员工具，支持文档和代码示例，以帮助您开始使用。
+个别开发工作各不相同，可能会导致对系统配置的修改。 NVIDIA建议您从基本系统配置开始（出货），以确保在进一步开发之前正确的系统运行。
+
+先决条件
+
+•Jetson TX2开发套件
+•您的Jetson TX2承载板必须按如下方式连线：
+•串行电缆直接或通过串行转USB转换器插入连接到Linux主机的目标串行端口。这是在Linux主机上设置串行控制台所必需的。
+•以太网电缆插入板载以太网端口。
+•HDMI电缆将承载板连接到外部HDMI显示器。
+•（未包含在开发套件中）要连接USB外围设备（如键盘，鼠标和USB /以太网适配器）（用于网络连接），必须将USB集线器连接到系统上工作的USB端口。
+开机
+1.将USB键盘连接到设备的USB A型连接器。
+2.将HDMI兼容显示器连接到设备上的HDMI接口。
+3.将套件中提供的AC适配器连接到设备的电源连接器。使用附带的AC适配器，因为它适合您的设备。
+4.将电源适配器插入适当额定的电源插座。
+系统应该打开电源。如果没有，请按下并释放设备上的电源。
+5.出现提示时，输入用户名和密码的nvidia。
+
+强制恢复模式
+
+要更新系统，您必须使用USB恢复模式，以便将系统软件传输到Jetson TX2模块。在强制USB恢复模式下，您可以更新系统软件并写入引导加载程序，引导配置表（BCT），并将分区配置写入设备。
+
+有关在Jetson TX2上更新系统软件时的操作系统特定说明，请参阅Developer SDK文档。
+
+将系统置于强制USB恢复模式
+
+1.关闭设备电源。如果已连接，请从设备上卸下AC适配器。设备必须关闭电源，不要处于挂起或睡眠状态。
+2.将USB电缆上的Micro-B插头连接到设备上的Recovery（USB Micro-B）端口，将另一端连接到主机PC上的可用USB端口。
+3.将电源适配器连接到设备。
+4.系统开机：
+•按住RECOVERY FORCE键。
+•按住RECOVERY FORCE键，同时按下并释放RESET按钮。
+•等待2秒钟并释放“恢复强制”按钮。
+
+闪烁引导加载程序和内核
+
+本主题介绍闪烁和引导目标Tegra设备所需的步骤。还为flash.sh帮助脚本提供了使用信息。
+有关详细信息，请参阅闪存引导加载程序和内核。
+闪烁的过程用引导加载程序和内核闪烁板。或者，您也可以将rootfs闪存到内部eMMC。
+
+先决条件
+
+必须存在以下目录：
+•/ bootloader-boot加载程序和闪存工具，如NvFlash，CFG，BCT等
+•/ kernel-a内核zImage /vmlinux.uimg，DTB文件和内核模块。
+•/ rootfs - 您下载的根文件系统。该目录最初是空的，用样本文件系统填充它。
+•/ nv_tegra-NVIDIA®Tegra®用户空间二进制程序和示例应用程序。
+此外，需要USB电缆，并且必须在运行闪烁命令之前连接到恢复端口。
+
+Flash目标Tegra设备
+
+1.将目标板放入复位/恢复模式，如下所示：
+•打开电源。
+•按住恢复按钮，然后按复位按钮
+
+2.运行本版本顶级目录中的flash.sh脚本。
+该脚本必须与根文件系统的目标板（jetson-tx2）一起提供：
+$ sudo ./flash.sh <platform> <rootdev>
+•如果根文件系统位于USB磁盘上，请执行以下脚本：
+$ sudo ./flash.sh <platform> sda1
+•如果连接了SATA设备，该设备将枚举为sda1。
+•如果根文件系统将在SD卡上，请执行以下脚本：
+$ sudo ./flash.sh <platform> mmcblk1p1
+•如果根文件系统位于内部eMMC上，请执行以下脚本：
+$ sudo ./flash.sh <platform> mmcblk0p1
+     其中<platform>是jetson-tx2。
+上面的例子是u-boot。对于fastboot，添加以下参数：
+-L <PATH_TO_FASTBOOT_BIN_FILE>
+引导加载程序和内核将加载。
+有关U-Boot的更多信息，请参阅 <U-Boot Customization>
+
+Flash脚本使用
+通过运行以下命令可以获得详细的使用信息：
+flash.sh -h
+用法
+sudo ./flash.sh [options] <platform> <rootdev>
+您在哪里指定所需的参数和下表中显示的一个或多个选项。
+参数说明
+<platform>是jetson-tx2。
+<rootdev>是以下之一：
+  mmcblk0p1指定内部eMMC。
+  mmcblk1p1指定外部SDCARD。
+  sda1指定外部USB设备（如USB记忆棒或HDD）。
+  eth0通过外部USB以太网接口指定nfsroot。
+选项说明
+-h  指定打印此使用信息。
+-b <bctfile>指定NvFlash引导配置表（BCT）文件。
+-c <cfgfile>指定NvFlash配置文件。
+-d <dtbfile>（可选）指定要使用的设备树文件，而不是默认设备。
+-e <emmc_file>指定目标设备的eMMC大小。
+-f <flashapp>指定Flash应用程序的路径：nvflash或tegra-rcm。
+-i 指定以原样将用户内核命令行传递给内核。
+-k <partition id>指定要更新的内核分区ID（最小= 5）。
+-n <nfs args>指定静态NFS网络分配： <客户端IP>：<服务器IP>：<网关IP>：<网络掩码>
+-o <odmdata>指定ODM数据的值。
+-p 总计eMMC硬件启动分区大小。
+-r 指定跳过构建和重用现有的system.img。
+-s <ubootscript>指定U-Boot的引导脚本文件。
+-C <cmdline>指定内核命令行。警告：此内核命令行中的每个选项都会从fastboot的相同选项获得更高的优先级。
+    在NFS启动的情况下，此脚本会添加NFS引导相关的参数
+-i 选项被省略。
+-F <flasher>指定Flash服务器，如fastboot.bin。
+-I <initrd>指定initrd文件。 Null initrd是默认值。
+-K <kernel>指定内核映像，如zImage。
+-L <bootloader>指定引导加载程序的完整路径，如fastboot.bin或uboot.bin。
+-P <end_of_PPT_plus_1> 指定主GPT起始地址，PPT大小加1的总和。
+-R <rootfs dir>指定示例rootfs目录。
+-N <nfsroot>指定nfsroot，例如：
+<my IP addr>：/ my / exported / nfs / rootfs
+-S <size>指定rootfs大小（以字节为单位）。这仅对内部rootdev有效。
+KiB，MiB，GiB风格的简写是允许的。例如，1GiB表示1024 *
+1024 * 1024字节。
+-T <ITS文件> ITS文件名。仅适用于u-boot。
+
+JETPACK
+NVIDIA® Jetson™开发包（JetPack）是一种自动安装开发的安装程序NVIDIA Jetson嵌入式平台的环境，并且可以使用最新的操作系统映像轻松地闪存Jetson系统。 JetPack包括主机和目标工具，API和软件包（中间件，示例和文档，包括编译样本的帮助），使您能够启动您的环境并开始开发。
+
+支持的主机操作系统
+
+•Ubuntu Linux x64（v14.04）
+JetPack TX2的完整安装至少需要10 GB的磁盘空间。
+
+目标平台要求
+•Jetson Tegra开发套件
+•连接如下：
+    •串行电缆插入到直接或通过串行转USB转换器连接到Linux主机的目标上的串行端口J1A2 UART4。需要在Linux主机上设置串行控制台。
+•将Jetson系统连接到Linux主机的USB Micro-B电缆闪烁。
+•（未包含在开发套件中）要连接USB外围设备（如键盘，鼠标和USB /以太网适配器）进行网络连接，必须将USB集线器连接到Jetson系统上的工作USB端口（J1C2 USB2）。
+•将HDMI电缆插入Jetson系统HDMI端口，该端口连接到外部HDMI显示器。
+•以太网电缆插入板载以太网端口。
+
+JetPack组件  JetPack Components
+
+JetPack包括用于在NVIDIA Jetson嵌入式平台上开发的主机（Ubuntu Desktop）和目标（Jetson）开发工具，API和软件包（操作系统映像，工具，中间件，示例和文档）。
+
+操作系统映像  OS Images
+
+JetPack包括从Ubuntu派生的示例文件系统。
+
+图书馆  Libraries
+
+JetPack包括以下库：
+  •用于Ubuntu的CUDA工具包（具有跨开发支持）
+  •用于L4T的CUDA工具包
+  •OpenCV for Tegra
+  •VisionWorks
+有关详细信息，请参阅：
+https://developer.nvidia.com/embedded/visionworks
+
+开发者工具 Developer Tools
+JetPack包括以下开发人员工具：
+
+Tegra图形调试器 Tegra Graphics Debugger
+一个控制台级工具，允许您调试和配置OpenGL ES 2.0，OpenGL ES 3.0，OpenGL ES 3.1，OpenGL 4.3，OpenGL 4.4和OpenGL 4.5，使游戏和图形开发人员能够充分利用Tegra。
+有关详细信息，请参阅：
+https://developer.nvidia.com/tegra-graphics-debugger
+
+Tegra系统剖面仪 Tegra System Profiler
+多核CPU采样分析器，提供捕获的分析数据的交互视图，有助于提高整体应用性能。
+有关详细信息，请参阅：
+https://developer.nvidia.com/tegra-system-profiler
+
+用PerfKit PerfKit
+提供对OpenGL驱动程序和GPU硬件性能计数器的访问的软件库。
+有关详细信息，请参阅：
+https://developer.nvidia.com/nvidia-perfkit
+
+样品 samples
+NVIDIA GameWorks OpenGL示例位于：
+http://developer.nvidia.com/gameworks-opengl-samples
+
+下载最新的 JetPack Downloading the Latest JetPack
+•最新版本的Jetson可在NVIDIA Embedded Developer Zone中获得：
+https://developer.nvidia.com/jetson-development-pack
+•所有可用的JetPack下载都可以在以下网址找到：
+https://developer.nvidia.com/jetpack-archive
+
+安装JetPack TX2  Installing JetPack TX2
+您必须下载最新的JetPack版本jetpack - $ {VERSION} .run。 $ {VERSION}是指
+您的安装程序的版本字符串。 
+安装具体教程见user guide 9-17页：
+http://developer2.download.nvidia.com/embedded/L4T/r27_Release_v1.0/Docs/Jetson_X2_Developer_Kit_User_Guide.pdf?nSdPUKxHB8QnFv5gmHFG5_WMR0tElxDt5u8-M8GZN5z2PeG5YyB1dVI4tDl9OKMteQEsSp6C_jUJ_psKp2_e03tgLrXeEj0GTSUscrQnplbjzDBPdjkmowPUtkxIbaNCd-TVPJlLEBV70DY3XgI8CW869EaOLCw30C_GPwXWPnsKihV1YijppQ
+
+编译  Compiling
+如果在组件选择期间检查编译样本，JetPack将自动编译所有样本。
+•如果您选择了CUDA组件，CUDA样品位于：
+<JetPack_Install_Dir> / NVIDIA_CUDA- <版本> _samples
+您可以通过运行以下方式重新编译样品：
+SMS=53 EXTRA_LDFLAGS=--unresolved-symbols=
+ignore-in-shared-libs TARGET_ARCH=aarch64 make
+•如果您选择了GameWorks OpenGL示例，GameWorks OpenGL示例可从以下网址获取：
+<JetPack_Install_Dir> / GameWorksOpenGLSamples
+您可以通过在以下子文件夹下运行make命令来交叉编译它们：
+samples/build/linux-arm32
+
+运行JetPack样品  Running JetPack Samples
+通过JetPack将CUDA样本目录复制到设备上的主目录中。 内置二进制文件位于以下目录中：
+/home/ubuntu/NVIDIA_CUDA-<version>_Samples/bin/armv7l/linux/release/gnueabihf/ 
+在命令行运行样本或在文件浏览器中双击它们。 例如，当您运行oceanFFT示例时，将显示以下屏幕。
+
+合规  Compliance
+NVIDIA®Jetson TX2开发套件符合本节中列出的规定。 合规标志，包括FCC和IC ID号，可以在以下网址找到：
+http://developer.nvidia.com/embedded-computing
+
+//***不重要的***//
+美国
+联邦通信委员会（FCC）
+FCC ID：VOB-P3310
+
+本设备符合FCC规则第15部分的规定。操作符合以下两个条件：（1）本设备不会产生有害干扰，（2）本设备必须接受任何收到的干扰，包括可能导致设备意外操作的干扰。
+
+该设备已经过测试，符合FCC规则第15部分对B类数字设备的限制。这些限制旨在提供合理的保护，防止住宅安装中的有害干扰。本设备产生，使用并可能辐射射频能量，如果不按照说明进行安装和使用，可能会对无线电通信造成有害干扰。但是，不能保证特定安装中不会发生干扰。
+
+如果本设备确实对广播或电视接收造成有害干扰，可以通过关闭和打开设备来确定，建议用户尝试通过以下一种或多种措施来纠正干扰：
+• 重新调整或摆放接收天线。
+•增加设备与接收器之间的距离。
+•将设备连接到与接收器连接的电路不同的电路上的插座。
+•咨询经销商或有经验的无线电/电视技术人员寻求帮助。
+
+FCC警告：FCC要求您通知未经制造商明确批准的本设备的任何更改或修改可能会使用户操作设备的权力失效。
+
+RF辐射暴露声明
+本设备符合针对不受控制的环境规定的FCC RF辐射暴露极限。该设备应在散热器和身体之间的最小距离为20厘米的范围内进行安装和操作。
+只有那些具有相同类型和较小/等于该FCC ID号的增益的天线才能与本装置一起使用。
+
+注意
+©2017 NVIDIA Corporation。版权所有。 NVIDIA，NVIDIA徽标和Jetson是NVIDIA Corporation在美国和其他国家/地区的商标和/或注册商标。其他公司和产品名称可能是与其相关的各自公司的商标。
+©2015 NVIDIA Corporation。版权所有。 NVIDIA，NVIDIA徽标和JETSON DEV KIT是NVIDIA Corporation在美国和其他国家/地区的商标和/或注册商标。其他公司和产品名称可能是与其相关的各自公司的商标。所有NVIDIA设计规范，参考板，文件，图纸，诊断，列表和其他文件（“独立”和“材料”）均按“原样”提供。 NVIDIA不作任何明示，暗示，法定或其他相关材料的保证，以及所有明示或默示的条件，陈述和保证，包括任何暗示的保证或条件，适销性，满意质量，特定用途适用性和侵权行为在此不在法律允许的最大范围内。
+
+所提供的信息被认为是准确可靠的。然而，NVIDIA公司对使用此类信息的后果或由于其使用可能导致的任何侵犯专利或第三方的其他权利的后果概不负责。根据NVIDIA公司的任何专利或专利权，暗示或以其他方式授予许可。本出版物提及的规格如有更改，恕不另行通知。本出版物取代并替代以前提供的所有信息。 NVIDIA Corporation产品未经NVIDIA公司明确书面许可，不得在生命支持设备或系统中用作关键组件。
+
+商标
+NVIDIA和NVIDIA徽标是NVIDIA Corporation在美国和其他国家/地区的商标或注册商标。其他公司和产品名称可能是与其相关的各自公司的商标。
+
+法律信息
+注意
+所有NVIDIA设计规范，参考板，文件，图纸，诊断，列表和其他文件（“独立”和“材料”）均按“原样”提供。 NVIDIA不作任何明示，暗示，法定或其他相关材料的保证，以及所有明示或默示的条件，陈述和保证，包括任何暗示的保证或条件，适销性，满意质量，特定用途适用性和违反法律规定的最大范围不在此限。
+
+所提供的信息被认为是准确可靠的。然而，NVIDIA公司对使用此类信息的后果或因其使用可能导致的第三方的专利或其他权利的任何侵犯而产生的后果概不负责。根据NVIDIA的任何专利或专利权，无许可或以其他方式授予许可公司。本出版物提及的规格如有更改，恕不另行通知。本出版物取代并替代以前提供的所有信息。 NVIDIA公司的产品未经明确书面许可，不得在生命支持设备或系统中用作关键组件
+的NVIDIA公司。
+
+商标
+NVIDIA，NVIDIA徽标，CUDA，DriveWorks，Jetson，Tegra，TensorRT，Vibrante和VisionWorks是NVIDIA Corporation在美国和其他国家/地区的商标或注册商标。其他公司和产品名称可能是与其相关的各自公司的商标。 Android机器人根据Google创建和共享的作品进行复制或修改，并根据Creative Commons 3.0 Attribution License中描述的条款使用。
+
+HDMI，HDMI标志和High-Definition Multimedia Interface是HDMI Licensing LLC的商标或注册商标。
+
+ARM，AMBA和ARM Powered是ARM Limited的注册商标。 Cortex，MPCore和Mali是ARM Limited的商标。所有其他品牌或产品名称均为其各自所有者的财产。 “ARM”用于代表ARM Holdings plc;其运营公司ARM Limited;和区域子公司ARM Inc. ARM KK; ARM韩国有限公司ARM台湾有限公司ARM法国SAS; ARM咨询（上海）有限公司ARM德国有限公司; ARM嵌入式技术有限公司有限公司; ARM挪威，AS和ARM瑞典AB。
+
+版权
+©2017 NVIDIA Corporation。版权所有
