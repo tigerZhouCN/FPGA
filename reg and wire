@@ -1,0 +1,83 @@
+reg 和 wire型的比较。
+	参考：
+	http://inst.eecs.berkeley.edu/~cs150/Documents/Nets.pdf
+	分3节讨论，Verilog中的wire和reg之间的区别，及其使用：
+	1.wire（组合逻辑）
+	   wire是Verilog设计中的导线（或任意宽度的总线），语法规则：
+	   •将模块实例化的输入和输出端口与设计中的其他元素连接起来；
+	       eg: 已有模块 module test(
+	            input clk,
+	            output[1:0]	swt		
+				);
+	      在模块top中将其例化：可有
+	      module top(
+	            		
+				          );
+			       wire clk;
+		        wire[1:0] swt;
+	       	test a1(
+		        .clk(clk),
+				.swt(swt)
+	             	);
+	  •实际模块声明中的输入和输出；
+	  eg:  module test(
+	            input clk,
+	            output[1:0]	swt		
+				  );
+	        wire clk;
+	        wire[1:0] swt;
+	  •必须由某些东西驱动，不能被驱动存储值;
+	  •在always@()模块中，wire不能作为条件，即不能在等式的左边；
+	  •在assign声明语句中，wire是唯一的合法语句，即只能是wire，不能使是reg；
+	  •只能用于组合逻辑建模；
+	  •在Verilog设计中，wire可以连接两个pieces
+	  下面的程序表示wire的用法：
+	       wire A , B , C , D , E ; // simple 1 -bit wide wires   1位线宽
+	       wire [8:0] Wide ; // a 9 -bit wide wire   9位线宽
+	       reg I ;
+	
+	       assign A = B & C ; // using a wire with an assign statement  assign声明语句用到wire型
+	
+	       always @ ( B or C ) begin     //在always @ ()模块中，wire型不能在条件左边         
+	             I = B | C ; // using wires on the right - hand side of an always@  ；在always @块中wire只能在条件右边
+	                     // assignment
+	                           end
+	
+	       mymodule mymodule_instance (. In ( D ) ,
+	                    .Out ( E ) ) ; // using a wire as the output of a module  将模块实例化的输入和输出端口与设计中的wire元素连接起来
+	                    
+	2.reg（组合和顺序逻辑）
+	    reg类似于电线，但可用于存储信息（“状态”）像寄存器。
+	    以下是使用reg元素时的语法规则：
+	      •reg元素可以连接到模块实例化的输入端口。
+	      •reg元素不能连接到模块实例化的输出端口。
+	      •reg元素可以在实际的模块声明中用作输出。
+	      •reg元素不能用作实际模块声明中的输入。
+	      •reg是在always @ 块中的 =或<= sign的左侧唯一的合法类型。
+	      •reg是初始块=符号左侧唯一的合法类型（在测试台中使用）。
+	      •reg不能在assign语句的左侧使用。
+	      •当与always @（posedge Clock）块结合使用时，reg可用于创建寄存器。
+	    因此，reg可以用于创建组合和顺序逻辑。
+	    下面的程序表示reg型的用法：
+	    wire A , B ;
+	    reg I , J , K ; // simple 1 -bit wide reg elements   1位reg型
+	    reg [8:0] Wide ; // a 9 -bit wide reg element        9位reg型
+	   
+	    always @ ( A or B ) begin
+	         I = A | B ; // using a reg as the left - hand side of an always@    //在always块内的赋值语句，reg型只能在等式左边
+	                    // assignment
+	                        end
+	
+	    initial begin // using a reg in an initial block    初始化语句中只能用reg型
+	         J = 1 ’ b1 ;
+	          #1
+	         J = 1 ’ b0 ;
+	            end
+	
+	    always @ ( posedge Clock ) begin
+	          K <= I ; // using a reg to create a positive -edge - triggered register //使用reg创建一个正触发的寄存器
+	             end
+	3.wire和reg可互换的情况
+	     在某些情况下，线和寄存器元件可以互换使用：
+	     两者都可以在always @ 块的 =或<=符号指定语句的右侧出现。
+	     两者都可以连接到模块实例的输入端口。
