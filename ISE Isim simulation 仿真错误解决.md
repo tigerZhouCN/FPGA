@@ -1,23 +1,41 @@
 //write 2017/5/19 //前两天给师弟做ISE的仿真，之前用过vivado和quartus II做仿真，没用过ISE，发现ISE和前两者有一定区别，记载下 //代码如下： //顶层文件：
 
 `timescale 1ns / 1ps
+
 module FB383(clk, rst, speaker); 
+
 input clk,rst; 
+
 output speaker;
+
 // first create a 16bit binary counter 
+
 reg [15:0] counter; 
+
 wire speaker;
+
 always @(posedge clk or posedge rst) 
+
  begin 
+ 
   if(rst) 
+  
     counter <= 1'b0; 
+    
   else 
+  
     counter <= counter + 1'b1;
+    
 // and use the most significant bit (MSB) of the counter to drive the speaker 
+
  end
+ 
 assign speaker = counter[1];
+
 endmodule
-//testbench代码 `timescale 1ns / 1ps
+
+//testbench代码 
+`timescale 1ns / 1ps
 module FB383_tb;
 reg clk,rst;
 wire speaker;
@@ -47,6 +65,7 @@ end
     
 	// Add stimulus here
 endmodule
+
 
 
 //两点注意的地方： 
