@@ -35,35 +35,55 @@ assign speaker = counter[1];
 endmodule
 
 //testbench代码 
+
 `timescale 1ns / 1ps
+
 module FB383_tb;
+
 reg clk,rst;
+
 wire speaker;
 
 // Instantiate the Unit Under Test (UUT)
+
 FB383 uut (
+
 	.clk(clk),
+	
 	.speaker(speaker),
+	
 	.rst(rst)
 );
+
 // reg reset; initial begin // Initialize Inputs // Wait 100 ns for global reset to finish clk = 0;
+
 forever   #1 clk = ~clk;
+
 end
  
  initial
+ 
  begin
+ 
  rst = 0;
+ 
  #100 rst = 1;
+ 
  #50 rst = 0;
+ 
  #10000 $stop;
+ 
  end
  
  initial
+ 
   $monitor($time,,rst,,clk,,,speaker);
+  
 // initial
+
 //	$display("speaker = % h hex % d decimal",speaker,speaker);
     
-	// Add stimulus here
+// Add stimulus here
 endmodule
 
 
